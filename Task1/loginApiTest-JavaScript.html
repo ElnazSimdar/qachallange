@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>loginApiTest</title>
+</head>
+<body>
+    <script>
+            const BASE_URL = 'https://api.sa-tech.de';
+            const LOGIN_ENDPOINT = '/auth/v2/{tenant}/login';
+
+           async function testLoginWithValidCredentials() {
+                    const tenant = 'ch';
+                    const url = `${BASE_URL}${LOGIN_ENDPOINT.replace('{tenant}', tenant)}`;
+                    const requestBody = {
+                            username: 'shop-user@redteclab.com',
+                            password: 'aA1!bB2@cC3#dD4$',
+                                        }
+                    try {
+                      const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Sae-Device-Type': 'browser',
+                        },
+                        body: JSON.stringify(requestBody),
+                      });
+
+                      // Check the response status code (expected 201 for success)
+                      if (response.status === 201) {
+                        console.log('Successful login test passed.');
+                        const responseBody = await response.json();
+                      } else {
+                        console.log('Successful login test failed. Status code:', response.status);
+                      }
+                    } catch (error) {
+                      console.error('Error occurred:', error);
+                    }
+  }
+
+// Run the test cases
+testLoginWithValidCredentials();
+
+
+    </script>
+    
+</body>
+</html>
