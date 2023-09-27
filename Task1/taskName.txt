@@ -1,0 +1,3 @@
+Task 1: API test
+Business requirements
+A customer is able to successfully log in with valid credentials
