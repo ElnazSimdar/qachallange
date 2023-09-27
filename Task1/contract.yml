@@ -1,0 +1,159 @@
+openapi: 3.0.3
+info:
+  title: BuLLy documentation
+  description: BuLLy Server
+  version: 1.0.0
+servers:
+  - url: 'https://{host}/{cacheable}'
+    variables:
+      cacheable:
+        enum:
+          - cacheable
+          - static
+        default: cacheable
+      host:
+        enum:
+          - api.sa-tech.de
+        default: api.sa-tech.de
+paths:
+  '/auth/v2/{tenant}/login':
+    post:
+      parameters:
+        - allowEmptyValue: false
+          deprecated: false
+          description: ControllerParam tenant
+        - in: path
+          name: tenant
+          required: true
+          schema:
+            enum:
+              - at
+              - ch
+              - com
+              - fr
+              - it
+            type: string
+        - $ref: '#/components/parameters/customer-authentication-device-type-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest_v2'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse_v2'
+          description: SuccessResponse
+        '400':
+          $ref: '#/components/responses/BadRequestAuthentication'
+        '504':
+          $ref: '#/components/responses/504'
+      tags:
+        - AuthController
+components:
+  parameters:
+    customer-authentication-device-type-header:
+      deprecated: false
+      in: header
+      name: Sae-Device-Type
+      required: false
+      schema:
+        enum:
+          - browser
+          - iosApp
+          - androidApp
+        type: string
+        example: 'browser'
+        default: 'browser'
+      description: >-
+        Describes the type of a device that is used to access the API.
+        Defaults to Browser if none is specified
+  responses:
+    '504':
+      description: Gateway Timeout
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GatewayTimeout'
+    BadRequestAuthentication:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Authentication400'
+  schemas:
+    GatewayTimeout:
+      properties:
+        statusCode:
+          type: number
+        error:
+          type: string
+        message:
+          type: string
+      example:
+        statusCode: 504
+        error: Gateway timed out
+        message: Connection to service timed out
+    Authentication400:
+      properties:
+        statusCode:
+          type: number
+        error:
+          type: string
+        message:
+          type: string
+        invalidParams:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvalidParam'
+      example:
+        statusCode: 400
+        error: Bad Request
+        message: Validation Exception
+        invalidParams:
+          field: password
+          key: parameter.error.empty
+    InvalidParam:
+      properties:
+        field:
+          type: string
+        key:
+          type: string
+      example:
+        field: subscriptionType
+        key: mailing.subscription.missing.mandatory.field
+    LoginRequest_v2:
+      example:
+        username: shop-user@redteclab.com
+        password: aA1!bB2@cC3#dD4$
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    LoginResponse_v2:
+      example:
+        token: >
+          eyJhbGciOiJSUzM4NCJ9.eyJzdWIiOiIxMjM0NTY3ODkiLCJyb2xlIjoiUkVHSVNURVJFRCIsInRl
+          bmFudCI6ImNvbS1kZXYiLCJ0eXBlIjoiQUNDRVNTIiwia2V5VmVyc2lvbiI6IjMyODNkZjdjLWE1N
+          WQtNDFiNi1iZTQ2LWU3N2Y4MDIyOTRjNCIsImRldmljZVR5cGUiOiJicm93c2VyIiwiZXhwIjo0Nz
+          c1MzAyMzgzLCJleHBSZWZyZXNoIjoiMjEyMS0wNC0yOFQxNjo1MzowMy4wMDhaIiwiZXhwU2Vuc2l
+          0aXZlIjoiMjEyMS0wNC0yOFQxNjo1MzowMy4wMDhaIiwianRpIjoiYjhhMmY3MjEtYmRkYi00YzNk
+          LWE4NWYtNzQ2MDgyNjFhOGE0IiwiaXNzIjoiYXV0aC5yZWR0ZWNsYWIuY29tIiwiaWF0IjoxNjE5N
+          jA4MzgzfQ.0Z58BpZYv0Gs2hNL39-2eENr7yi4V1VSJiNgZ5BxTz0Dsek2VAYMIJvy_sQu-
+          tDbuLZjMQAIbC1GJe79fH3P6B81y8UAdQYvM5bwd8za3UWOoi1pP23rpimCFuDxAg3mTq7ycr6wJ8
+          f8-mB2381uGT1gQUAyHH7TP1lpTB31jm_un3xuCv5pRe4OvXNfLholMuz_OjoXvV_6j6N-WXqs-
+          H34ld-Za-mxACNVl0rXU6FAYPLBbHjznoD5kJKN74-
+          7d525WXPZbMqryky3rUqxnEiQjSt1nAcRRhJv1Rt7dEDTTcfIUpKXuGpA5qKeF06l5hJTcoEdF92H
+          2vHAUfTef9VWRytH1rI_dTgcUr7VCAv9CKmbvl3EWdTDCvfCSZHXOYi-
+          MnCJsnDsNhl6dnf020gC9Yq6mrg_A2P9EZq4LGgAXwXCHA9l8im4As23f69wTxpbLUlf5y9HnmR6Y
+          -fLybnwjEM3BfVqC5dmTBmS-izau_pc_p4gZyvfXvt7kYU2
+        tokenType: bearer
+      properties:
+        tokenType:
+          type: string
+        token:
+          type: string
